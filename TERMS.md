@@ -269,7 +269,7 @@ These Terms, along with the Privacy Policy and other referenced policies, consti
 **Questions about these Terms?**
 
 📧 Email: <i>Comming soon</i>  
-📝 Issues: [GitHub Issues](https://github.com/yourusername/tz-tourism/issues)
+📝 Issues: [GitHub Issues](https://github.com/cleven12/tz-tourism/issues)
 
 ---
 

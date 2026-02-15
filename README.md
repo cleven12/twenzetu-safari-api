@@ -1,68 +1,48 @@
-# 🗺️ TZ Tourism
+# 🗺️ TZ Tourism - Backend API
 
-> Open-source tourism platform for Tanzania with GPS-accurate attraction data, real-time weather, and seasonal planning guides.
+> Django REST API for Tanzania tourism platform with GPS-accurate attraction data, real-time weather, and seasonal planning guides.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Django](https://img.shields.io/badge/Django-4.2+-green.svg)](https://www.djangoproject.com/)
-[![Next.js](https://img.shields.io/badge/Next.js-14+-black.svg)](https://nextjs.org/)
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
+[![DRF](https://img.shields.io/badge/DRF-3.14+-red.svg)](https://www.django-rest-framework.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-**Live Demo:** [Coming Soon] | **API Docs:** [COMING SOON](docs/API.md)
+**Frontend Repo:** [tz-tourism-web](https://github.com/cleven12/tz-tourism-web) | **API Docs:** [docs/API.md](docs/API.md)
 
 ---
 
-## 🎯 The Problem
+## 🎯 About
 
-Tourists visiting Tanzania face:
-- [X] **Scattered information** about attractions
-- [X] **Generic weather data** (city-level, not location-specific)
-- [X] **Unclear difficulty ratings** for activities
-- [X] **No seasonal planning guidance** (rain vs dry seasons)
-- [X] **Commercially biased** or misleading information
+This is the **backend API** for TZ Tourism platform - providing GPS-accurate data for Tanzania's tourist attractions, real-time weather information, and comprehensive REST API for developers.
 
-**Result:** Poor planning, wrong timing, unrealistic expectations, safety risks.
-
----
-
-## ✨ The Solution
-
-**TZ Tourism** provides:
-- **GPS-accurate location data** for every attraction
-- **Real-time weather** at specific attractions (not cities)
-- **Historical weather patterns** for seasonal planning
-- **Honest difficulty ratings** (altitude, terrain, physical challenge)
-- **Nearest access points** (airports, towns)
-- **Open-source & free** — no commercial bias
-- **Well-documented REST API** for developers
+**Frontend repository:** [tz-tourism-web](https://github.com/cleven12/tz-tourism-web)
 
 ---
 
 ## 🏗️ Architecture
 
-**Monorepo Structure:**
+**Backend API Structure:**
 ```
 tz-tourism/
-├──app  
-|   ├── backend/      # Django REST API
-|   └── frontend/     # Next.js web app
-├── docs/             # Documentation
-└── legal/            # Terms, Privacy, Moderation
+├── attractions/      # Attractions app (models, views, serializers)
+├── regions/          # Regions app
+├── weather/          # Weather integration (Open-Meteo)
+├── tour_api/         # Main API configuration & settings
+├── manage.py         # Django management script
+├── docs/             # API documentation
+└── legal/            # Terms, Privacy, Moderation policies
 ```
 
-### **Backend (Django)**
-- REST API with DRF
-- MySQL database
-- Weather integration (Open-Meteo)
-- User authentication
-- Content moderation system
-
-### **Frontend (Next.js)**
-- Server-side rendering (SEO)
-- Interactive maps (Leaflet)
-- Responsive design
-- Real-time weather display
-- Progressive Web App (PWA)
+### **Core Features:**
+- 🔌 RESTful API with Django REST Framework
+- 🗄️ PostgreSQL/MySQL database support
+- 🌤️ Real-time weather integration (Open-Meteo API)
+- 🔐 JWT authentication
+- 📍 GPS-accurate location data
+- 📊 Historical weather patterns
+- ✅ Content moderation system
+- 📖 OpenAPI/Swagger documentation
 
 ---
 
@@ -70,18 +50,15 @@ tz-tourism/
 
 ### **Prerequisites**
 - Python 3.10+
-- Node.js 18+
 - PostgreSQL (or SQLite for dev)
+- pip & virtualenv
 
-### **1. Clone Repository**
+### **Installation**
+
 ```bash
-git clone https://github.com/yourusername/tz-tourism.git
+# Clone repository
+git clone https://github.com/cleven12/tz-tourism.git
 cd tz-tourism
-```
-
-### **2. Backend Setup**
-```bash
-cd backend
 
 # Create virtual environment
 python -m venv venv
@@ -90,69 +67,67 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your database credentials and API keys
+
 # Run migrations
 python manage.py migrate
 
-# Create superuser (optional)
+# Create superuser
 python manage.py createsuperuser
 
-# Start server
+# Load initial data (optional)
+python manage.py loaddata initial_data.json
+
+# Start development server
 python manage.py runserver
 ```
 
-Backend runs at: `http://localhost:8000`
-
-### **3. Frontend Setup**
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Create environment file
-cp .env.example .env.local
-
-# Add your API URL to .env.local:
-# NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
-
-# Start development server
-npm run dev
-```
-
-Frontend runs at: `http://localhost:3000`
+**API runs at:** `http://localhost:8000/api/v1/`  
+**Admin panel:** `http://localhost:8000/admin/`  
+**API docs:** `http://localhost:8000/api/docs/`
 
 ---
 
 ## 📚 API Endpoints
 
+### **Core Endpoints**
+
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/v1/attractions/` | GET | List all attractions |
 | `/api/v1/attractions/:id/` | GET | Attraction details |
-| `/api/v1/attractions/:id/weather/` | GET | Current weather |
-| `/api/v1/attractions/:id/seasonal/` | GET | Seasonal patterns |
-| `/api/v1/regions/` | GET | All regions |
-| `/api/v1/weather/current/` | GET | Weather by GPS |
-
-**Full Documentation:** [API.md](docs/API.md)
+| `/api/v1/attractions/:id/weather/` | GET | Current weather at location |
+| `/api/v1/attractions/:id/seasonal/` | GET | Seasonal weather patterns |
+| `/api/v1/regions/` | GET | List all regions |
+| `/api/v1/regions/:id/` | GET | Region details |
+| `/api/v1/weather/current/` | GET | Weather by GPS coordinates |
+| `/api/v1/auth/login/` | POST | User authentication |
+| `/api/v1/auth/register/` | POST | User registration |
 
 ### **Example Response**
+
 ```json
 {
   "id": 1,
   "name": "Mount Kilimanjaro",
-  "region": "Kilimanjaro",
+  "region": {
+    "id": 1,
+    "name": "Kilimanjaro"
+  },
   "latitude": -3.0674,
   "longitude": 37.3556,
   "altitude_meters": 5895,
   "difficulty": "difficult",
   "nearest_airport": "Kilimanjaro International Airport (JRO)",
-  "description": "Africa's highest mountain...",
+  "description": "Africa's highest mountain and world's tallest free-standing mountain...",
   "weather": {
     "temperature_c": 22.5,
     "condition": "Clear",
+    "wind_speed_kmh": 12.3,
     "rain_mm": 0.0,
-    "updated_at": "2026-02-10T10:30:00Z"
+    "updated_at": "2026-02-15T14:30:00Z"
   },
   "seasonal_info": {
     "dry_season": "June-October, January-February",
@@ -160,125 +135,145 @@ Frontend runs at: `http://localhost:3000`
     "best_time_to_visit": "June-October"
   },
   "is_verified": true,
-  "last_updated": "2026-02-01T08:00:00Z"
+  "created_at": "2026-01-15T08:00:00Z",
+  "updated_at": "2026-02-01T10:00:00Z"
 }
 ```
+
+**Full API Documentation:** [docs/API.md](docs/API.md)
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=.
+
+# Run specific test file
+pytest attractions/tests.py
+
+# Run with verbose output
+pytest -v
+```
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework:** Django 4.2+ / Django REST Framework 3.14+
+- **Database:** PostgreSQL (production) / SQLite (dev)
+- **Authentication:** JWT (djangorestframework-simplejwt)
+- **Weather API:** Open-Meteo
+- **Documentation:** drf-spectacular (OpenAPI/Swagger)
+- **Testing:** pytest + pytest-django
+- **Code Quality:** black, flake8, isort
+- **CORS:** django-cors-headers
+- **Hosting:** PythonAnywhere / Railway / Heroku / AWS
 
 ---
 
 ## 🌟 Key Features
 
-### **For Tourists:**
-- 📍 Browse attractions by region
-- 🗺️ Interactive map view
-- 🌤️ Real-time weather at each location
-- 📊 Historical weather trends
-- ⛰️ Clear difficulty ratings
-- 📅 Seasonal planning guides
-- ✈️ Nearest airports & access info
+### **For API Consumers:**
+- 🔌 RESTful design with predictable endpoints
+- 📖 Comprehensive OpenAPI documentation
+- 🔑 JWT authentication support
+- 🚀 Fast response times with database optimization
+- 📊 Pagination & filtering support
+- 🆓 Free & open-source
 
 ### **For Developers:**
-- 🔌 RESTful API
-- 📖 OpenAPI documentation
-- 🔑 API key support (coming soon)
-- 🚀 Fast response times
-- 🆓 Free & open-source
+- 🧪 Well-tested codebase (pytest)
+- 📝 Clear code structure & documentation
+- 🔧 Easy to extend with Django apps
+- 🐳 Docker support (coming soon)
+- 🔄 CI/CD with GitHub Actions
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how you can help:
+We welcome contributions! Here's how to help:
 
-### **Ways to Contribute:**
-- 🗺️ **Add new attractions** — know a hidden gem?
-- 📸 **Upload photos** — share your travel photos
-- 🐛 **Report bugs** — found an issue?
-- 💡 **Suggest features** — have ideas?
-- 📖 **Improve docs** — help others understand
-- 🔧 **Fix bugs** — submit a PR
-- 🌐 **Translate** — add language support
+### **Development Setup:**
 
-### **Getting Started:**
-1. Read [CONTRIBUTING.md](CONTRIBUTING.md)
-2. Check [open issues](https://github.com/yourusername/tz-tourism/issues)
-3. Fork the repo
-4. Create a feature branch
-5. Submit a pull request
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Make your changes
+4. Run tests: `pytest`
+5. Format code: `black . && isort .`
+6. Commit: `git commit -m "Add your feature"`
+7. Push: `git push origin feature/your-feature`
+8. Open a Pull Request
 
----
+### **Contribution Ideas:**
+- 🗺️ Add new attractions
+- 🐛 Fix bugs
+- 📖 Improve documentation
+- 🧪 Add tests
+- ✨ Propose new features
+- 🌐 Add translations
 
-## ⚠️ Important Disclaimers
-
-### **Please Read Before Using:**
-
-This platform provides information **for planning purposes only**.
-
-**We are NOT responsible for:**
-- [x] Injuries or accidents during travel
-- [x] Weather-related incidents
-- [x] Inaccurate or outdated information
-- [x] Third-party tour operator services
-
-**You should:**
-- [✔] Verify all information with local authorities
-- [✔] Check real-time weather before traveling
-- [✔] Consult professional guides for challenging activities
-- [✔] Get medical advice for high-altitude areas
-- [✔] Use this as a **planning tool**, not a guarantee
-
-### **Data Accuracy:**
-- Weather data: Third-party APIs (Open-Meteo)
-- Seasonal info: Historical patterns (not forecasts)
-- Attraction data: Crowd-sourced and moderated
-- Difficulty ratings: Subjective estimates
-
-**Full Terms:** [TERMS.md](legal/TERMS.md) | **Privacy:** [PRIVACY.md](legal/PRIVACY.md)
+**Read:** [CONTRIBUTING.md](CONTRIBUTING.md) | [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 
 ---
 
 ## 📊 Project Status
 
 ### **Current Features:**
-- [✔] Core attraction database
-- [✔] REST API
-- [✔] Real-time weather integration
-- [✔] Interactive map
-- [✔] Responsive web interface
-- [✔] Content moderation system
+- ✅ Core attraction database models
+- ✅ REST API with DRF
+- ✅ Real-time weather integration
+- ✅ JWT authentication
+- ✅ Admin panel
+- ✅ Content moderation system
+- ✅ OpenAPI documentation
 
 ### **Roadmap:**
-- [✔] User reviews (moderated)
-- [✔] Tour operator directory
-- [✔] Multi-language support (Swahili, French)
-- [✔] Mobile app (React Native)
-- [✔] Offline PWA mode
-- [✔] Advanced search & filters
-- [✔] Trip planning tool
-- [✔] Community forum
+- ⏳ User reviews API
+- ⏳ Tour operator directory
+- ⏳ Image upload & management
+- ⏳ Advanced search & filters
+- ⏳ Rate limiting & caching
+- ⏳ Docker containerization
+- ⏳ GraphQL API (optional)
+- ⏳ Multi-language support
 
 ---
 
-## 🛠️ Tech Stack
+## ⚙️ Environment Variables
 
-### **Backend:**
-- **Framework:** Django 4.2+ / Django REST Framework
-- **Database:** PostgreSQL (production) / SQLite (dev)
-- **Weather:** Open-Meteo API
-- **Hosting:** PythonAnywhere / Railway / Heroku
+Create a `.env` file in the root directory:
 
-### **Frontend:**
-- **Framework:** Next.js 14+ (React)
-- **Styling:** Tailwind CSS
-- **Maps:** Leaflet / Mapbox
-- **State:** React Context / Zustand
-- **Hosting:** Vercel / Netlify
+```env
+# Django
+SECRET_KEY=your-secret-key-here
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
 
-### **DevOps:**
-- **CI/CD:** GitHub Actions
-- **Version Control:** Git
-- **Testing:** pytest (backend), Jest (frontend)
-- **Monitoring:** Sentry (coming soon)
+# Database
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=tz_tourism
+DB_USER=postgres
+DB_PASSWORD=your-password
+DB_HOST=localhost
+DB_PORT=5432
+
+# Weather API
+OPEN_METEO_API_URL=https://api.open-meteo.com/v1
+
+# CORS (Frontend URL)
+CORS_ALLOWED_ORIGINS=http://localhost:3000,https://tz-tourism-web.vercel.app
+
+# JWT
+JWT_SECRET_KEY=your-jwt-secret
+JWT_ACCESS_TOKEN_LIFETIME=60  # minutes
+JWT_REFRESH_TOKEN_LIFETIME=1440  # minutes (24 hours)
+```
 
 ---
 
@@ -293,16 +288,22 @@ This platform provides information **for planning purposes only**.
 
 ---
 
-## 💖 Support This Project
+## ⚠️ Disclaimers
 
-If this project helps you, consider:
+This API provides data **for planning purposes only**.
 
-- ⭐ **Star this repository**
-- 🐛 **Report bugs or issues**
-- 💡 **Suggest new features**
-- 🔀 **Submit pull requests**
-- 📢 **Share with others**
-- ☕ [**Buy me a coffee**](https://buymeacoffee.com/yourusername)
+**We are NOT responsible for:**
+- Injuries or accidents during travel
+- Weather-related incidents
+- Inaccurate or outdated information
+- Third-party services
+
+**Data Sources:**
+- Weather: Open-Meteo API
+- Attraction data: Community-contributed & moderated
+- Difficulty ratings: Subjective estimates
+
+**Full Terms:** [legal/TERMS.md](legal/TERMS.md)
 
 ---
 
@@ -316,28 +317,28 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## 🌍 About
 
-Built by a Tanzanian developer to provide **honest, accurate tourism information** for Tanzania.
+Built to provide **honest, accurate tourism data** for Tanzania through an open, well-documented API.
 
-**Mission:** Enable safe, informed, and meaningful tourism through open data.
+**Mission:** Enable safe, informed tourism through accessible data.
+
+**Frontend:** [tz-tourism-web](https://github.com/cleven12/tz-tourism-web)
 
 ---
 
 ## 📬 Contact
 
-- **Issues:** [GitHub Issues](https://github.com/yourusername/tz-tourism/issues)
+- **Issues:** [GitHub Issues](https://github.com/cleven12/tz-tourism/issues)
 - **Email:** your.email@example.com
-- **LinkedIn:** [Your Profile](https://linkedin.com/in/yourprofile)
-- **Twitter:** [@yourusername](https://twitter.com/yourusername)
+- **API Support:** api@tz-tourism.com
 
 ---
 
 ## 🙏 Acknowledgments
 
 - Weather data: [Open-Meteo](https://open-meteo.com)
-- Maps: [OpenStreetMap](https://www.openstreetmap.org) contributors
-- Icons: [Lucide Icons](https://lucide.dev)
-- Community contributors: [See all](https://github.com/yourusername/tz-tourism/graphs/contributors)
+- Framework: [Django](https://djangoproject.com) & [DRF](https://www.django-rest-framework.org)
+- Community contributors: [See all](https://github.com/cleven12/tz-tourism/graphs/contributors)
 
 ---
 
-**⚡ Built with Django + Next.js | 🇹🇿 Made in Tanzania | 🌍 For the World**
+**⚡ Built with Django + DRF | 🇹🇿 Made in Tanzania | 🌍 For the World**

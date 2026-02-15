@@ -455,7 +455,7 @@ Contributors are recognized in:
 ## 📞 Need Help?
 
 **Questions about contributing?**
-- Open a [Discussion](https://github.com/yourusername/tz-tourism/discussions)
+- Open a [Discussion](https://github.com/cleven12/tz-tourism/discussions)
 - Ask in issues with "question" label
 - Email: NULL
 
