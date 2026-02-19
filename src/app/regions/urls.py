@@ -1,10 +1,7 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import RegionViewSet
-
-router = DefaultRouter()
-router.register(r'', RegionViewSet)
+from django.urls import path
+from .views import region_list_create, region_detail
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', region_list_create, name='region-list-create'),
+    path('<slug:slug>/', region_detail, name='region-detail'),
 ]

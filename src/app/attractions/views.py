@@ -1,63 +1,97 @@
-from rest_framework import viewsets, filters
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.decorators import action
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.core.cache import cache
 from .models import Attraction
 from .serializers import (
-    AttractionListSerializer, 
+    AttractionListSerializer,
     AttractionDetailSerializer,
     AttractionCreateUpdateSerializer
 )
 
+BASE_QUERYSET = Attraction.objects.filter(is_active=True).select_related('region', 'created_by').prefetch_related('images', 'tips')
 
-class AttractionViewSet(viewsets.ModelViewSet):
-    queryset = Attraction.objects.filter(is_active=True).select_related('region', 'created_by').prefetch_related('images', 'tips')
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    lookup_field = 'slug'
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['name', 'description', 'short_description', 'region__name']
-    ordering_fields = ['created_at', 'name', 'difficulty_level']
 
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return AttractionListSerializer
-        elif self.action in ['create', 'update', 'partial_update']:
-            return AttractionCreateUpdateSerializer
-        return AttractionDetailSerializer
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def attraction_list_create(request):
+    if request.method == 'GET':
+        attractions = BASE_QUERYSET
+        search = request.query_params.get('search')
+        if search:
+            attractions = attractions.filter(name__icontains=search) | \
+                          attractions.filter(description__icontains=search) | \
+                          attractions.filter(short_description__icontains=search) | \
+                          attractions.filter(region__name__icontains=search)
+        ordering = request.query_params.get('ordering')
+        if ordering:
+            attractions = attractions.order_by(ordering)
+        serializer = AttractionListSerializer(attractions, many=True)
+        return Response(serializer.data)
+    serializer = AttractionCreateUpdateSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(created_by=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
 
-    @action(detail=False, methods=['get'])
-    def featured(self, request):
-        cache_key = 'featured_attractions'
-        featured = cache.get(cache_key)
-        
-        if not featured:
-            featured = self.queryset.filter(is_featured=True)[:6]
-            serializer = self.get_serializer(featured, many=True)
-            cache.set(cache_key, serializer.data, 3600)
+@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def attraction_detail(request, slug):
+    try:
+        attraction = BASE_QUERYSET.get(slug=slug)
+    except Attraction.DoesNotExist:
+        return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = AttractionDetailSerializer(attraction)
+        return Response(serializer.data)
+    elif request.method in ['PUT', 'PATCH']:
+        serializer = AttractionCreateUpdateSerializer(attraction, data=request.data, partial=request.method == 'PATCH')
+        if serializer.is_valid():
+            serializer.save()
             return Response(serializer.data)
-        
-        return Response(featured)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        attraction.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=False, methods=['get'])
-    def by_category(self, request):
-        category = request.query_params.get('category')
-        if not category:
-            return Response({'error': 'Category parameter is required'}, status=400)
-        
-        attractions = self.queryset.filter(category=category)
-        serializer = self.get_serializer(attractions, many=True)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def featured_attractions(request):
+    cache_key = 'featured_attractions'
+    featured = cache.get(cache_key)
+
+    if not featured:
+        featured_qs = BASE_QUERYSET.filter(is_featured=True)[:6]
+        serializer = AttractionListSerializer(featured_qs, many=True)
+        cache.set(cache_key, serializer.data, 3600)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['get'])
-    def by_region(self, request):
-        region_slug = request.query_params.get('region')
-        if not region_slug:
-            return Response({'error': 'Region parameter is required'}, status=400)
-        
-        attractions = self.queryset.filter(region__slug=region_slug)
-        serializer = self.get_serializer(attractions, many=True)
-        return Response(serializer.data)
+    return Response(featured)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def attractions_by_category(request):
+    category = request.query_params.get('category')
+    if not category:
+        return Response({'error': 'Category parameter is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    attractions = BASE_QUERYSET.filter(category=category)
+    serializer = AttractionListSerializer(attractions, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def attractions_by_region(request):
+    region_slug = request.query_params.get('region')
+    if not region_slug:
+        return Response({'error': 'Region parameter is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    attractions = BASE_QUERYSET.filter(region__slug=region_slug)
+    serializer = AttractionListSerializer(attractions, many=True)
+    return Response(serializer.data)
