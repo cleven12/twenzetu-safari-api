@@ -182,3 +182,22 @@ CACHES = {
 # Weather API Configuration
 WEATHER_API_BASE_URL = 'https://api.open-meteo.com/v1/forecast'
 WEATHER_CACHE_TIMEOUT = 1800  # 30 minutes
+
+# PythonAnywhere production overrides
+# These activate when ON_PYTHONANYWHERE=True is set in the server .env
+if config('ON_PYTHONANYWHERE', default=False, cast=bool):
+    DEBUG = False
+    ALLOWED_HOSTS = [
+        config('PYTHONANYWHERE_USERNAME', default='') + '.pythonanywhere.com',
+    ] + [h for h in ALLOWED_HOSTS if h not in ('', 'localhost', '127.0.0.1')]
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': Path.home() / config('PYTHONANYWHERE_USERNAME', default='app') / 'tz-tourism' / 'db.sqlite3',
+        }
+    }
+
+    STATIC_ROOT = BASE_DIR / 'staticfiles'
+    MEDIA_ROOT = Path.home() / config('PYTHONANYWHERE_USERNAME', default='app') / 'tz-tourism' / 'media'
+
