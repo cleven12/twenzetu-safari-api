@@ -1,0 +1,81 @@
+{
+  "id": 3,
+  "name": "Serengeti National Park",
+  "slug": "serengeti-national-park",
+  "region": {
+    "id": 2,
+    "name": "Arusha",
+    "slug": "arusha",
+    "description": "Arusha is Tanzania's safari capital and the gateway to many of Africa's most iconic wildlife destinations. Nestled between Mount Meru and Mount Kilimanjaro, the region encompasses Arusha National Park, Serengeti, Ngorongoro Crater, Lake Manyara, and Tarangire.",
+    "image": "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&q=80",
+    "latitude": "-3.386900",
+    "longitude": "36.683000",
+    "attraction_count": 5,
+    "created_at": "2025-01-01T00:00:00Z"
+  },
+  "category": "wildlife",
+  "category_display": "Wildlife Safari",
+  "description": "The Serengeti National Park is one of the most iconic wildlife destinations on Earth, covering approximately 14,763 km² of vast savannah plains in northern Tanzania. UNESCO World Heritage Site and one of the Seven Natural Wonders of Africa, the Serengeti is synonymous with the Great Migration — the annual movement of over 1.5 million wildebeest, 200,000 zebra, and hundreds of thousands of other ungulates across the plains. The park supports some of Africa's highest densities of large carnivores including lions, leopards, cheetahs, and spotted hyenas. Over 500 bird species have been recorded.",
+  "short_description": "Home to the legendary Great Migration and Africa's highest density of predators. Over 1.5 million wildebeest cross these endless plains annually.",
+  "latitude": "-2.333333",
+  "longitude": "34.833333",
+  "altitude": 1524,
+  "difficulty_level": "easy",
+  "difficulty_display": "Easy",
+  "access_info": "Accessible by road from Arusha (325 km, 7–8 hours) or by charter flight to Seronera airstrip. All visitors must travel in a registered safari vehicle with a licensed guide. Multiple camp and lodge options available inside the park.",
+  "nearest_airport": "Kilimanjaro International Airport (JRO)",
+  "distance_from_airport": "325.00",
+  "best_time_to_visit": "June–October for river crossings; January–March for calving season",
+  "seasonal_availability": "Open year-round. The famous Mara River crossing happens July–October. Calving season (January–March) offers excellent predator sightings. The green season (November–May) brings lush scenery with fewer crowds.",
+  "estimated_duration": "3–7 days",
+  "entrance_fee": "82.00",
+  "requires_guide": true,
+  "requires_permit": false,
+  "featured_image": "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1200&q=80",
+  "images": [
+    {
+      "id": 1,
+      "image": "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&q=80",
+      "caption": "Wildebeest crossing the Mara River during the Great Migration",
+      "order": 0
+    },
+    {
+      "id": 2,
+      "image": "https://images.unsplash.com/photo-1504173010664-32509107de72?w=800&q=80",
+      "caption": "Lion pride on the Serengeti plains at sunset",
+      "order": 1
+    },
+    {
+      "id": 3,
+      "image": "https://images.unsplash.com/photo-1535083783855-ade8a849ce28?w=800&q=80",
+      "caption": "Cheetah scanning the open savannah",
+      "order": 2
+    },
+    {
+      "id": 4,
+      "image": "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&q=80",
+      "caption": "Acacia trees at dawn in the central Serengeti",
+      "order": 3
+    }
+  ],
+  "tips": [
+    {
+      "id": 3,
+      "title": "Best time for river crossings",
+      "description": "The dramatic Mara River wildebeest crossings happen between late July and mid-October. Position yourself in the northern Serengeti near the Mara River in August for the most spectacular scenes.",
+      "created_by_username": "admin",
+      "created_at": "2025-01-01T00:00:00Z"
+    },
+    {
+      "id": 4,
+      "title": "Stay inside the park overnight",
+      "description": "Staying at a camp or lodge inside the Serengeti allows for early morning and late afternoon drives when predators are most active. Day trips from Arusha do not do justice to this incredible park.",
+      "created_by_username": "admin",
+      "created_at": "2025-01-01T00:00:00Z"
+    }
+  ],
+  "is_featured": true,
+  "created_by_username": "admin",
+  "created_at": "2025-01-01T00:00:00Z",
+  "updated_at": "2025-01-15T08:30:00Z"
+}
