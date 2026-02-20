@@ -12,3 +12,4 @@ copilot*.md
 *.log
 *.bak
 *.swp
+copilot-*

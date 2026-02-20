@@ -457,11 +457,11 @@ Contributors are recognized in:
 **Questions about contributing?**
 - Open a [Discussion](https://github.com/cleven12/tz-tourism/discussions)
 - Ask in issues with "question" label
-- Email: NULL
+- Email: cf89615f228bb45cc805447510de802dfb4bae17@proton.me
 
 **Found a security issue?**
 - DO NOT open a public issue
-- Email: NULL
+- Email: cf89615f228bb45cc805447510de802dfb4bae17@proton.me
 - See [SECURITY.md](SECURITY.md)
 
 ---
