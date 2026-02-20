@@ -73,7 +73,7 @@ ROOT_URLCONF = 'cofig.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR.parent / 'public'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -166,6 +166,8 @@ SIMPLE_JWT = {
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = [
     config('FRONTEND_URL', default='http://localhost:3000'),
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
 ]
 
 CORS_ALLOW_CREDENTIALS = True
