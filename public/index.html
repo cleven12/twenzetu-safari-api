@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TZ Tourism — Attractions</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root { --green: #1a7a3c; --gold: #d4a017; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; }
+    .modal-backdrop { backdrop-filter: blur(4px); }
+    .card-hover { transition: transform .2s, box-shadow .2s; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,.15); }
+    .badge { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 9999px; font-size: .75rem; font-weight: 600; }
+    .tab-btn.active { border-bottom: 3px solid #1a7a3c; color: #1a7a3c; font-weight: 600; }
+    #toast { pointer-events: none; }
+    .difficulty-easy { background: #d1fae5; color: #065f46; }
+    .difficulty-moderate { background: #fef3c7; color: #92400e; }
+    .difficulty-challenging { background: #fed7aa; color: #9a3412; }
+    .difficulty-difficult { background: #fecaca; color: #991b1b; }
+    .difficulty-extreme { background: #e9d5ff; color: #6b21a8; }
+    input[type=range]::-webkit-slider-thumb { accent-color: #1a7a3c; }
+    .form-section { border-left: 3px solid #1a7a3c; padding-left: 1rem; margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="bg-white shadow-sm sticky top-0 z-30">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+    <div class="flex items-center gap-3">
+      <span class="text-2xl">🦁</span>
+      <div>
+        <div class="font-bold text-gray-900 leading-tight">TZ Tourism</div>
+        <div class="text-xs text-gray-500 leading-tight">Tanzania Attractions</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <div id="userInfo" class="hidden flex items-center gap-2 text-sm text-gray-700">
+        <i class="fa fa-user-circle text-green-700 text-xl"></i>
+        <span id="userName" class="font-medium"></span>
+      </div>
+      <button id="btnLogin" onclick="openAuthModal()"
+        class="px-4 py-2 text-sm font-medium text-white rounded-lg"
+        style="background:#1a7a3c">
+        <i class="fa fa-sign-in-alt mr-1"></i> Sign In
+      </button>
+      <button id="btnLogout" onclick="logout()" class="hidden px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50">
+        <i class="fa fa-sign-out-alt mr-1"></i> Sign Out
+      </button>
+      <button id="btnAdd" onclick="openCreateModal()" class="hidden px-4 py-2 text-sm font-medium text-white rounded-lg bg-amber-500 hover:bg-amber-600">
+        <i class="fa fa-plus mr-1"></i> Add Attraction
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="text-white py-10 px-4" style="background: linear-gradient(135deg, #1a7a3c 0%, #0f4d25 60%, #d4a017 100%)">
+  <div class="max-w-7xl mx-auto">
+    <h1 class="text-3xl sm:text-4xl font-bold mb-2">Discover Tanzania</h1>
+    <p class="text-green-100 mb-6 max-w-xl">Explore wildlife safaris, mountain peaks, pristine beaches, and rich cultural heritage across Tanzania's most iconic destinations.</p>
+    <div class="flex flex-wrap gap-4">
+      <div class="bg-white/20 rounded-xl px-5 py-3 text-center">
+        <div id="statAttractions" class="text-2xl font-bold">–</div>
+        <div class="text-xs text-green-100 mt-1">Attractions</div>
+      </div>
+      <div class="bg-white/20 rounded-xl px-5 py-3 text-center">
+        <div id="statRegions" class="text-2xl font-bold">–</div>
+        <div class="text-xs text-green-100 mt-1">Regions</div>
+      </div>
+      <div class="bg-white/20 rounded-xl px-5 py-3 text-center">
+        <div id="statFeatured" class="text-2xl font-bold">–</div>
+        <div class="text-xs text-green-100 mt-1">Featured</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FILTERS ═══ -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+  <div class="bg-white rounded-xl shadow-sm p-4 flex flex-wrap gap-3 items-end">
+    <div class="flex-1 min-w-[180px]">
+      <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Search</label>
+      <div class="relative">
+        <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+        <input id="searchInput" type="text" placeholder="Name, region, description…"
+          class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+          oninput="applyFilters()" />
+      </div>
+    </div>
+    <div class="min-w-[160px]">
+      <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Category</label>
+      <select id="filterCategory" onchange="applyFilters()"
+        class="w-full border border-gray-200 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+        <option value="">All Categories</option>
+        <option value="mountain">Mountain</option>
+        <option value="beach">Beach</option>
+        <option value="wildlife">Wildlife Safari</option>
+        <option value="cultural">Cultural Site</option>
+        <option value="historical">Historical Site</option>
+        <option value="adventure">Adventure Activity</option>
+        <option value="national_park">National Park</option>
+        <option value="island">Island</option>
+        <option value="waterfall">Waterfall</option>
+        <option value="lake">Lake</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="min-w-[160px]">
+      <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Region</label>
+      <select id="filterRegion" onchange="applyFilters()"
+        class="w-full border border-gray-200 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+        <option value="">All Regions</option>
+      </select>
+    </div>
+    <div class="min-w-[160px]">
+      <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Difficulty</label>
+      <select id="filterDifficulty" onchange="applyFilters()"
+        class="w-full border border-gray-200 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+        <option value="">All Levels</option>
+        <option value="easy">Easy</option>
+        <option value="moderate">Moderate</option>
+        <option value="challenging">Challenging</option>
+        <option value="difficult">Difficult</option>
+        <option value="extreme">Extreme</option>
+      </select>
+    </div>
+    <button onclick="clearFilters()" class="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50">
+      <i class="fa fa-times mr-1"></i>Clear
+    </button>
+  </div>
+
+  <!-- Results count -->
+  <div class="mt-4 flex items-center justify-between">
+    <p id="resultsCount" class="text-sm text-gray-500"></p>
+    <div class="flex gap-2">
+      <button onclick="setView('grid')" id="viewGrid" class="p-2 rounded hover:bg-gray-100 text-green-700">
+        <i class="fa fa-th-large"></i>
+      </button>
+      <button onclick="setView('list')" id="viewList" class="p-2 rounded hover:bg-gray-100 text-gray-400">
+        <i class="fa fa-list"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ ATTRACTIONS GRID ═══ -->
+  <div id="attractionsContainer" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- cards rendered here -->
+  </div>
+
+  <!-- Empty state -->
+  <div id="emptyState" class="hidden text-center py-16">
+    <div class="text-6xl mb-4">🌍</div>
+    <h3 class="text-lg font-semibold text-gray-700">No attractions found</h3>
+    <p class="text-gray-500 mt-1">Try adjusting your filters or search query.</p>
+  </div>
+
+  <!-- Loading -->
+  <div id="loadingState" class="text-center py-16">
+    <div class="inline-block animate-spin text-4xl text-green-700 mb-4"><i class="fa fa-circle-notch"></i></div>
+    <p class="text-gray-500">Loading attractions…</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ MODALS ═══════════════════════════════════ -->
+
+<!-- AUTH MODAL -->
+<div id="authModal" class="fixed inset-0 z-50 hidden flex items-center justify-center modal-backdrop bg-black/50">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+    <div class="flex border-b">
+      <button class="tab-btn active flex-1 py-3 text-sm" id="tabLogin" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="tab-btn flex-1 py-3 text-sm text-gray-500" id="tabRegister" onclick="switchAuthTab('register')">Register</button>
+    </div>
+    <!-- Login form -->
+    <div id="formLogin" class="p-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-1">Welcome back</h2>
+      <p class="text-sm text-gray-500 mb-5">Sign in to create or manage attractions</p>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+          <input id="loginUsername" type="text" placeholder="your_username"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input id="loginPassword" type="password" placeholder="••••••••"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+            onkeydown="if(event.key==='Enter') login()" />
+        </div>
+        <p id="loginError" class="text-red-600 text-sm hidden"></p>
+        <button onclick="login()" class="w-full py-2.5 text-sm font-medium text-white rounded-lg" style="background:#1a7a3c">
+          <i class="fa fa-sign-in-alt mr-1"></i> Sign In
+        </button>
+      </div>
+    </div>
+    <!-- Register form -->
+    <div id="formRegister" class="p-6 hidden">
+      <h2 class="text-xl font-bold text-gray-900 mb-1">Create account</h2>
+      <p class="text-sm text-gray-500 mb-5">Join TZ Tourism to contribute attractions</p>
+      <div class="space-y-3">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Username <span class="text-red-500">*</span></label>
+            <input id="regUsername" type="text" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+            <input id="regPhone" type="text" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+          <input id="regEmail" type="email" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password <span class="text-red-500">*</span></label>
+          <input id="regPassword" type="password" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password <span class="text-red-500">*</span></label>
+          <input id="regPasswordConfirm" type="password" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+        </div>
+        <p id="regError" class="text-red-600 text-sm hidden"></p>
+        <button onclick="register()" class="w-full py-2.5 text-sm font-medium text-white rounded-lg" style="background:#1a7a3c">
+          <i class="fa fa-user-plus mr-1"></i> Create Account
+        </button>
+      </div>
+    </div>
+    <div class="px-6 pb-4 text-center">
+      <button onclick="closeModal('authModal')" class="text-sm text-gray-400 hover:text-gray-600">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div id="detailModal" class="fixed inset-0 z-50 hidden flex items-center justify-center modal-backdrop bg-black/50">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col">
+    <div class="flex items-start justify-between p-6 border-b">
+      <div>
+        <h2 id="detailName" class="text-2xl font-bold text-gray-900"></h2>
+        <p id="detailMeta" class="text-sm text-gray-500 mt-1"></p>
+      </div>
+      <button onclick="closeModal('detailModal')" class="text-gray-400 hover:text-gray-600 ml-4 text-xl">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+    <div id="detailBody" class="overflow-y-auto p-6 space-y-5 flex-1"></div>
+    <div id="detailActions" class="p-4 border-t flex justify-end gap-3"></div>
+  </div>
+</div>
+
+<!-- CREATE/EDIT MODAL -->
+<div id="formModal" class="fixed inset-0 z-50 hidden flex items-center justify-center modal-backdrop bg-black/50">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[95vh] flex flex-col">
+    <div class="flex items-center justify-between p-5 border-b">
+      <h2 id="formModalTitle" class="text-xl font-bold text-gray-900">Add New Attraction</h2>
+      <button onclick="closeModal('formModal')" class="text-gray-400 hover:text-gray-600 text-xl">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Tab nav -->
+    <div class="flex border-b px-5 overflow-x-auto">
+      <button class="tab-btn active whitespace-nowrap py-3 px-4 text-sm mr-1" onclick="switchFormTab(0)">Basic Info</button>
+      <button class="tab-btn whitespace-nowrap py-3 px-4 text-sm mr-1 text-gray-500" onclick="switchFormTab(1)">Location</button>
+      <button class="tab-btn whitespace-nowrap py-3 px-4 text-sm mr-1 text-gray-500" onclick="switchFormTab(2)">Access & Season</button>
+      <button class="tab-btn whitespace-nowrap py-3 px-4 text-sm text-gray-500" onclick="switchFormTab(3)">Practical Info</button>
+    </div>
+
+    <div class="overflow-y-auto flex-1 p-6">
+      <!-- Tab 0: Basic Info -->
+      <div id="ftab0" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Name <span class="text-red-500">*</span></label>
+            <input id="fName" type="text" oninput="autoSlug()"
+              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Slug <span class="text-red-500">*</span></label>
+            <input id="fSlug" type="text" placeholder="auto-generated-from-name"
+              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 font-mono" />
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Region <span class="text-red-500">*</span></label>
+            <select id="fRegion" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+              <option value="">Select region…</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Category <span class="text-red-500">*</span></label>
+            <select id="fCategory" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+              <option value="">Select category…</option>
+              <option value="mountain">Mountain</option>
+              <option value="beach">Beach</option>
+              <option value="wildlife">Wildlife Safari</option>
+              <option value="cultural">Cultural Site</option>
+              <option value="historical">Historical Site</option>
+              <option value="adventure">Adventure Activity</option>
+              <option value="national_park">National Park</option>
+              <option value="island">Island</option>
+              <option value="waterfall">Waterfall</option>
+              <option value="lake">Lake</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Short Description <span class="text-red-500">*</span> <span class="text-gray-400 text-xs">(max 300 chars)</span></label>
+          <textarea id="fShortDesc" rows="2" maxlength="300"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"></textarea>
+          <p id="shortDescCount" class="text-xs text-gray-400 mt-1 text-right">0 / 300</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Full Description <span class="text-red-500">*</span></label>
+          <textarea id="fDesc" rows="5"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 resize-y"></textarea>
+        </div>
+        <div class="flex gap-4">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input id="fFeatured" type="checkbox" class="w-4 h-4 accent-green-700" />
+            <span class="text-sm text-gray-700">Featured attraction</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Tab 1: Location -->
+      <div id="ftab1" class="space-y-4 hidden">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Latitude <span class="text-red-500">*</span></label>
+            <input id="fLat" type="number" step="0.000001" placeholder="-3.075833"
+              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Longitude <span class="text-red-500">*</span></label>
+            <input id="fLon" type="number" step="0.000001" placeholder="37.353333"
+              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Altitude (m)</label>
+            <input id="fAlt" type="number" placeholder="1500"
+              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+          </div>
+        </div>
+        <div class="bg-blue-50 rounded-xl p-4 text-sm text-blue-700">
+          <i class="fa fa-map-marker-alt mr-1"></i>
+          Enter decimal degree coordinates. Tanzania is in the range Lat: −12 to −1, Lon: 29 to 41.
+        </div>
+      </div>
+
+      <!-- Tab 2: Access & Season -->
+      <div id="ftab2" class="space-y-4 hidden">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Difficulty Level <span class="text-red-500">*</span></label>
+          <select id="fDifficulty" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+            <option value="">Select difficulty…</option>
+            <option value="easy">Easy</option>
+            <option value="moderate">Moderate</option>
+            <option value="challenging">Challenging</option>
+            <option value="difficult">Difficult</option>
+            <option value="extreme">Extreme</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Access Information <span class="text-red-500">*</span></label>
+          <textarea id="fAccess" rows="3"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"></textarea>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nearest Airport</label>
+            <input id="fAirport" type="text" placeholder="e.g. Kilimanjaro International (JRO)"
+              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Distance from Airport (km)</label>
+            <input id="fAirportDist" type="number" step="0.01"
+              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Best Time to Visit <span class="text-red-500">*</span></label>
+          <input id="fBestTime" type="text" placeholder="e.g. June-October and January-March"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Seasonal Availability <span class="text-red-500">*</span></label>
+          <textarea id="fSeasonal" rows="3"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"></textarea>
+        </div>
+      </div>
+
+      <!-- Tab 3: Practical Info -->
+      <div id="ftab3" class="space-y-4 hidden">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Estimated Duration <span class="text-red-500">*</span></label>
+          <input id="fDuration" type="text" placeholder="e.g. 3-5 hours, 2 days"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Entrance Fee (USD)</label>
+          <input id="fFee" type="number" step="0.01" placeholder="0.00"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+        </div>
+        <div class="flex gap-6">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input id="fGuide" type="checkbox" class="w-4 h-4 accent-green-700" />
+            <span class="text-sm text-gray-700">Requires guide</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input id="fPermit" type="checkbox" class="w-4 h-4 accent-green-700" />
+            <span class="text-sm text-gray-700">Requires permit</span>
+          </label>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Featured Image <span class="text-xs text-gray-400">(file upload or URL)</span></label>
+          <input id="fImage" type="file" accept="image/*"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+          <input id="fImageUrl" type="text" placeholder="Or paste image URL (optional)"
+            class="w-full mt-2 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
+        </div>
+      </div>
+    </div>
+
+    <div class="p-5 border-t flex items-center justify-between">
+      <p id="formError" class="text-sm text-red-600 hidden"></p>
+      <div class="flex gap-3 ml-auto">
+        <button onclick="closeModal('formModal')" class="px-5 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50">Cancel</button>
+        <button id="formSubmitBtn" onclick="submitAttractionForm()"
+          class="px-6 py-2 text-sm font-medium text-white rounded-lg" style="background:#1a7a3c">
+          <i class="fa fa-save mr-1"></i> Save Attraction
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div id="deleteModal" class="fixed inset-0 z-50 hidden flex items-center justify-center modal-backdrop bg-black/50">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6">
+    <div class="text-center mb-5">
+      <div class="text-5xl mb-3">⚠️</div>
+      <h3 class="text-xl font-bold text-gray-900">Delete Attraction?</h3>
+      <p class="text-sm text-gray-500 mt-2">This will permanently delete <strong id="deleteAttractionName" class="text-gray-800"></strong>. This action cannot be undone.</p>
+    </div>
+    <div class="flex gap-3">
+      <button onclick="closeModal('deleteModal')" class="flex-1 py-2.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-50">Cancel</button>
+      <button id="deleteConfirmBtn" onclick="confirmDelete()"
+        class="flex-1 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700">
+        <i class="fa fa-trash mr-1"></i> Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="fixed bottom-6 right-6 z-50 hidden">
+  <div id="toastInner" class="flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-white text-sm font-medium">
+    <i id="toastIcon" class="fa text-lg"></i>
+    <span id="toastMsg"></span>
+  </div>
+</div>
+
+<!-- ═══════════════════ JAVASCRIPT ═══════════════════ -->
+<script>
+const API = '/api/v1';
+
+const state = {
+  token: localStorage.getItem('tz_token'),
+  user: (() => { try { return JSON.parse(localStorage.getItem('tz_user')); } catch { return null; } })(),
+  attractions: [],
+  regions: [],
+  filtered: [],
+  editingSlug: null,
+  deleteSlug: null,
+  view: 'grid',
+  formTab: 0,
+};
+
+// ── Auth helpers ───────────────────────────────────
+function authHeaders() {
+  return state.token ? { Authorization: `Bearer ${state.token}` } : {};
+}
+
+async function apiGet(path) {
+  const res = await fetch(API + path, { headers: authHeaders() });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+async function apiPost(path, body, isJson = true) {
+  const headers = { ...authHeaders() };
+  if (isJson) headers['Content-Type'] = 'application/json';
+  const res = await fetch(API + path, {
+    method: 'POST',
+    headers,
+    body: isJson ? JSON.stringify(body) : body,
+  });
+  return { ok: res.ok, status: res.status, data: await res.json() };
+}
+
+async function apiPatch(path, body, isJson = true) {
+  const headers = { ...authHeaders() };
+  if (isJson) headers['Content-Type'] = 'application/json';
+  const res = await fetch(API + path, {
+    method: 'PATCH',
+    headers,
+    body: isJson ? JSON.stringify(body) : body,
+  });
+  return { ok: res.ok, status: res.status, data: await res.json() };
+}
+
+async function apiDelete(path) {
+  const res = await fetch(API + path, { method: 'DELETE', headers: authHeaders() });
+  return res.ok;
+}
+
+// ── Auth actions ───────────────────────────────────
+async function login() {
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const err = document.getElementById('loginError');
+  err.classList.add('hidden');
+  if (!username || !password) { showError('loginError', 'Please enter username and password.'); return; }
+  const { ok, data } = await apiPost('/auth/login/', { username, password });
+  if (ok) {
+    state.token = data.access;
+    state.user = { username: data.username || username, email: data.email };
+    localStorage.setItem('tz_token', data.access);
+    localStorage.setItem('tz_user', JSON.stringify(state.user));
+    closeModal('authModal');
+    updateAuthUI();
+    showToast('Signed in successfully', 'success');
+  } else {
+    const msg = data.detail || data.non_field_errors?.[0] || 'Invalid credentials.';
+    showError('loginError', msg);
+  }
+}
+
+async function register() {
+  const payload = {
+    username: document.getElementById('regUsername').value.trim(),
+    email: document.getElementById('regEmail').value.trim(),
+    password: document.getElementById('regPassword').value,
+    password_confirm: document.getElementById('regPasswordConfirm').value,
+    phone: document.getElementById('regPhone').value.trim(),
+  };
+  document.getElementById('regError').classList.add('hidden');
+  if (!payload.username || !payload.email || !payload.password) {
+    showError('regError', 'Username, email and password are required.'); return;
+  }
+  const { ok, data } = await apiPost('/auth/register/', payload);
+  if (ok) {
+    showToast('Account created! Please sign in.', 'success');
+    switchAuthTab('login');
+    document.getElementById('loginUsername').value = payload.username;
+  } else {
+    const msg = Object.values(data).flat().join(' ');
+    showError('regError', msg || 'Registration failed.');
+  }
+}
+
+function logout() {
+  state.token = null;
+  state.user = null;
+  localStorage.removeItem('tz_token');
+  localStorage.removeItem('tz_user');
+  updateAuthUI();
+  showToast('Signed out', 'info');
+}
+
+function updateAuthUI() {
+  const loggedIn = !!state.token;
+  document.getElementById('btnLogin').classList.toggle('hidden', loggedIn);
+  document.getElementById('btnLogout').classList.toggle('hidden', !loggedIn);
+  document.getElementById('btnAdd').classList.toggle('hidden', !loggedIn);
+  document.getElementById('userInfo').classList.toggle('hidden', !loggedIn);
+  if (state.user) document.getElementById('userName').textContent = state.user.username || '';
+}
+
+// ── Data fetching ──────────────────────────────────
+async function fetchAttractions() {
+  try {
+    const data = await apiGet('/attractions/');
+    state.attractions = Array.isArray(data) ? data : (data.results || []);
+  } catch (e) { console.error('Attractions fetch failed', e); state.attractions = []; }
+}
+
+async function fetchRegions() {
+  try {
+    const data = await apiGet('/regions/');
+    state.regions = Array.isArray(data) ? data : (data.results || []);
+    populateRegionSelects();
+  } catch (e) { console.error('Regions fetch failed', e); }
+}
+
+async function fetchAttractionDetail(slug) {
+  return apiGet(`/attractions/${slug}/`);
+}
+
+function populateRegionSelects() {
+  const opts = state.regions.map(r => `<option value="${r.slug}">${r.name}</option>`).join('');
+  document.getElementById('filterRegion').innerHTML = '<option value="">All Regions</option>' + opts;
+  const fOpts = state.regions.map(r => `<option value="${r.id}">${r.name}</option>`).join('');
+  document.getElementById('fRegion').innerHTML = '<option value="">Select region…</option>' + fOpts;
+}
+
+// ── Filters ────────────────────────────────────────
+function applyFilters() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const category = document.getElementById('filterCategory').value;
+  const regionSlug = document.getElementById('filterRegion').value;
+  const difficulty = document.getElementById('filterDifficulty').value;
+
+  state.filtered = state.attractions.filter(a => {
+    if (search && !`${a.name} ${a.short_description} ${a.region_name}`.toLowerCase().includes(search)) return false;
+    if (category && a.category !== category) return false;
+    if (regionSlug) {
+      const region = state.regions.find(r => r.slug === regionSlug);
+      if (region && a.region_name !== region.name) return false;
+    }
+    if (difficulty && a.difficulty_level !== difficulty) return false;
+    return true;
+  });
+
+  renderAttractions();
+}
+
+function clearFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('filterCategory').value = '';
+  document.getElementById('filterRegion').value = '';
+  document.getElementById('filterDifficulty').value = '';
+  applyFilters();
+}
+
+function setView(v) {
+  state.view = v;
+  document.getElementById('viewGrid').className = `p-2 rounded hover:bg-gray-100 ${v === 'grid' ? 'text-green-700' : 'text-gray-400'}`;
+  document.getElementById('viewList').className = `p-2 rounded hover:bg-gray-100 ${v === 'list' ? 'text-green-700' : 'text-gray-400'}`;
+  renderAttractions();
+}
+
+// ── Render ─────────────────────────────────────────
+const CATEGORY_EMOJI = {
+  mountain: '⛰️', beach: '🏖️', wildlife: '🦁', cultural: '🏛️',
+  historical: '🏰', adventure: '🧗', national_park: '🌿', island: '🏝️',
+  waterfall: '💧', lake: '🌊', other: '✨',
+};
+
+function difficultyBadge(level) {
+  const label = { easy: 'Easy', moderate: 'Moderate', challenging: 'Challenging', difficult: 'Difficult', extreme: 'Extreme' };
+  return `<span class="badge difficulty-${level}">${label[level] || level}</span>`;
+}
+
+function renderAttractions() {
+  const container = document.getElementById('attractionsContainer');
+  const empty = document.getElementById('emptyState');
+  const loading = document.getElementById('loadingState');
+
+  loading.classList.add('hidden');
+  document.getElementById('resultsCount').textContent = `${state.filtered.length} attraction${state.filtered.length !== 1 ? 's' : ''} found`;
+
+  if (state.filtered.length === 0) {
+    container.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+
+  if (state.view === 'grid') {
+    container.className = 'mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6';
+    container.innerHTML = state.filtered.map(a => `
+      <div class="bg-white rounded-2xl overflow-hidden shadow-sm card-hover cursor-pointer border border-gray-100" onclick="openDetailModal('${a.slug}')">
+        <div class="relative bg-gradient-to-br from-green-800 to-green-600 h-40 flex items-center justify-center">
+          ${a.featured_image && typeof a.featured_image === 'string' && a.featured_image.startsWith('http')
+            ? `<img src="${a.featured_image}" alt="${a.name}" class="w-full h-full object-cover" />`
+            : `<span class="text-6xl">${CATEGORY_EMOJI[a.category] || '✨'}</span>`}
+          ${a.is_featured ? '<span class="absolute top-3 right-3 bg-amber-400 text-amber-900 text-xs font-bold px-2 py-1 rounded-full">⭐ Featured</span>' : ''}
+          <div class="absolute bottom-3 left-3">${difficultyBadge(a.difficulty_level)}</div>
+        </div>
+        <div class="p-4">
+          <div class="flex items-start justify-between gap-2 mb-2">
+            <h3 class="font-bold text-gray-900 text-base leading-tight">${a.name}</h3>
+          </div>
+          <p class="text-xs text-green-700 font-medium mb-2"><i class="fa fa-map-marker-alt mr-1"></i>${a.region_name}</p>
+          <p class="text-sm text-gray-500 line-clamp-2 mb-3">${a.short_description}</p>
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-gray-400">${a.category_display || a.category}</span>
+            <span class="text-xs font-medium text-green-700">${a.best_time_to_visit ? a.best_time_to_visit.substring(0, 30) + '…' : ''}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    container.className = 'mt-4 flex flex-col gap-3';
+    container.innerHTML = state.filtered.map(a => `
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex gap-4 items-center card-hover cursor-pointer" onclick="openDetailModal('${a.slug}')">
+        <div class="w-16 h-16 rounded-xl bg-green-700 flex items-center justify-center text-3xl flex-shrink-0">
+          ${CATEGORY_EMOJI[a.category] || '✨'}
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 class="font-bold text-gray-900">${a.name}</h3>
+            ${a.is_featured ? '<span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">⭐ Featured</span>' : ''}
+            ${difficultyBadge(a.difficulty_level)}
+          </div>
+          <p class="text-xs text-green-700 font-medium mt-0.5"><i class="fa fa-map-marker-alt mr-1"></i>${a.region_name} · ${a.category_display || a.category}</p>
+          <p class="text-sm text-gray-500 truncate mt-1">${a.short_description}</p>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function renderStats() {
+  document.getElementById('statAttractions').textContent = state.attractions.length;
+  document.getElementById('statRegions').textContent = state.regions.length;
+  document.getElementById('statFeatured').textContent = state.attractions.filter(a => a.is_featured).length;
+}
+
+// ── Detail Modal ───────────────────────────────────
+async function openDetailModal(slug) {
+  document.getElementById('detailModal').classList.remove('hidden');
+  document.getElementById('detailBody').innerHTML = '<div class="text-center py-10 text-gray-400"><i class="fa fa-spinner fa-spin text-3xl"></i></div>';
+  document.getElementById('detailActions').innerHTML = '';
+  try {
+    const a = await fetchAttractionDetail(slug);
+    document.getElementById('detailName').textContent = a.name;
+    document.getElementById('detailMeta').innerHTML =
+      `<i class="fa fa-map-marker-alt text-green-700 mr-1"></i>${a.region?.name || ''} &nbsp;·&nbsp; ${a.category_display || a.category} &nbsp;·&nbsp; ${difficultyBadge(a.difficulty_level)}`;
+
+    document.getElementById('detailBody').innerHTML = `
+      ${a.featured_image && typeof a.featured_image === 'string' && a.featured_image.startsWith('http')
+        ? `<img src="${a.featured_image}" alt="${a.name}" class="w-full h-56 object-cover rounded-xl mb-4" />`
+        : ''}
+      <p class="text-gray-700 text-sm leading-relaxed">${a.description}</p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
+        ${infoCard('⏱', 'Duration', a.estimated_duration)}
+        ${infoCard('💵', 'Entrance Fee', a.entrance_fee ? `$${a.entrance_fee} USD` : 'Free')}
+        ${infoCard('📅', 'Best Time', a.best_time_to_visit)}
+        ${a.altitude ? infoCard('📏', 'Altitude', `${a.altitude}m`) : ''}
+        ${infoCard('🛫', 'Nearest Airport', a.nearest_airport || '—')}
+        ${a.distance_from_airport ? infoCard('🚗', 'From Airport', `${a.distance_from_airport} km`) : ''}
+      </div>
+      <div class="grid grid-cols-2 gap-3 mt-2">
+        ${a.requires_guide ? '<div class="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 rounded-lg px-3 py-2"><i class="fa fa-user-tie"></i> Guide required</div>' : ''}
+        ${a.requires_permit ? '<div class="flex items-center gap-2 text-sm text-blue-700 bg-blue-50 rounded-lg px-3 py-2"><i class="fa fa-file-alt"></i> Permit required</div>' : ''}
+      </div>
+      ${a.access_info ? `<div class="mt-4"><h4 class="font-semibold text-gray-900 mb-1 text-sm">🗺 How to Get There</h4><p class="text-sm text-gray-600">${a.access_info}</p></div>` : ''}
+      ${a.seasonal_availability ? `<div class="mt-4"><h4 class="font-semibold text-gray-900 mb-1 text-sm">🌤 Seasonal Info</h4><p class="text-sm text-gray-600">${a.seasonal_availability}</p></div>` : ''}
+      ${a.tips?.length ? `
+        <div class="mt-4">
+          <h4 class="font-semibold text-gray-900 mb-3 text-sm">💡 Traveller Tips</h4>
+          <div class="space-y-3">
+            ${a.tips.map(t => `
+              <div class="bg-yellow-50 border-l-4 border-yellow-400 rounded-r-xl p-3">
+                <p class="font-medium text-sm text-yellow-900">${t.title}</p>
+                <p class="text-sm text-yellow-800 mt-1">${t.description}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+    `;
+
+    if (state.token) {
+      document.getElementById('detailActions').innerHTML = `
+        <button onclick="closeModal('detailModal'); openEditModal('${slug}')"
+          class="px-5 py-2 text-sm font-medium text-white rounded-lg" style="background:#1a7a3c">
+          <i class="fa fa-edit mr-1"></i> Edit
+        </button>
+        <button onclick="closeModal('detailModal'); openDeleteModal('${slug}', '${a.name.replace(/'/g, "\\'")}')"
+          class="px-5 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50">
+          <i class="fa fa-trash mr-1"></i> Delete
+        </button>
+      `;
+    }
+  } catch (e) {
+    document.getElementById('detailBody').innerHTML = '<p class="text-red-600 text-sm">Failed to load attraction details.</p>';
+  }
+}
+
+function infoCard(icon, label, value) {
+  if (!value) return '';
+  return `<div class="bg-gray-50 rounded-xl p-3"><p class="text-xs text-gray-400 mb-1">${icon} ${label}</p><p class="text-sm font-medium text-gray-800">${value}</p></div>`;
+}
+
+// ── Create / Edit ──────────────────────────────────
+function openCreateModal() {
+  if (!state.token) { openAuthModal(); return; }
+  state.editingSlug = null;
+  document.getElementById('formModalTitle').textContent = 'Add New Attraction';
+  clearForm();
+  switchFormTab(0);
+  document.getElementById('formModal').classList.remove('hidden');
+}
+
+async function openEditModal(slug) {
+  if (!state.token) { openAuthModal(); return; }
+  state.editingSlug = slug;
+  document.getElementById('formModalTitle').textContent = 'Edit Attraction';
+  switchFormTab(0);
+  document.getElementById('formModal').classList.remove('hidden');
+  try {
+    const a = await fetchAttractionDetail(slug);
+    document.getElementById('fName').value = a.name || '';
+    document.getElementById('fSlug').value = a.slug || '';
+    document.getElementById('fRegion').value = a.region?.id || '';
+    document.getElementById('fCategory').value = a.category || '';
+    document.getElementById('fShortDesc').value = a.short_description || '';
+    updateShortDescCount();
+    document.getElementById('fDesc').value = a.description || '';
+    document.getElementById('fFeatured').checked = !!a.is_featured;
+    document.getElementById('fLat').value = a.latitude || '';
+    document.getElementById('fLon').value = a.longitude || '';
+    document.getElementById('fAlt').value = a.altitude || '';
+    document.getElementById('fDifficulty').value = a.difficulty_level || '';
+    document.getElementById('fAccess').value = a.access_info || '';
+    document.getElementById('fAirport').value = a.nearest_airport || '';
+    document.getElementById('fAirportDist').value = a.distance_from_airport || '';
+    document.getElementById('fBestTime').value = a.best_time_to_visit || '';
+    document.getElementById('fSeasonal').value = a.seasonal_availability || '';
+    document.getElementById('fDuration').value = a.estimated_duration || '';
+    document.getElementById('fFee').value = a.entrance_fee || '';
+    document.getElementById('fGuide').checked = !!a.requires_guide;
+    document.getElementById('fPermit').checked = !!a.requires_permit;
+    if (a.featured_image && typeof a.featured_image === 'string' && a.featured_image.startsWith('http')) {
+      document.getElementById('fImageUrl').value = a.featured_image;
+    }
+  } catch (e) {
+    showToast('Failed to load attraction data', 'error');
+  }
+}
+
+async function submitAttractionForm() {
+  const name = document.getElementById('fName').value.trim();
+  const slug = document.getElementById('fSlug').value.trim();
+  const region = document.getElementById('fRegion').value;
+  const category = document.getElementById('fCategory').value;
+  const shortDesc = document.getElementById('fShortDesc').value.trim();
+  const desc = document.getElementById('fDesc').value.trim();
+  const lat = document.getElementById('fLat').value;
+  const lon = document.getElementById('fLon').value;
+  const difficulty = document.getElementById('fDifficulty').value;
+  const access = document.getElementById('fAccess').value.trim();
+  const bestTime = document.getElementById('fBestTime').value.trim();
+  const seasonal = document.getElementById('fSeasonal').value.trim();
+  const duration = document.getElementById('fDuration').value.trim();
+
+  document.getElementById('formError').classList.add('hidden');
+
+  if (!name || !slug || !region || !category || !shortDesc || !desc || !lat || !lon || !difficulty || !access || !bestTime || !seasonal || !duration) {
+    showFormError('Please fill in all required fields (check all tabs).'); return;
+  }
+
+  const imageFile = document.getElementById('fImage').files[0];
+  const imageUrl = document.getElementById('fImageUrl').value.trim();
+
+  let body;
+  let isJson = true;
+
+  const payload = {
+    name, slug, region, category,
+    short_description: shortDesc,
+    description: desc,
+    latitude: lat,
+    longitude: lon,
+    difficulty_level: difficulty,
+    access_info: access,
+    best_time_to_visit: bestTime,
+    seasonal_availability: seasonal,
+    estimated_duration: duration,
+    is_featured: document.getElementById('fFeatured').checked,
+    requires_guide: document.getElementById('fGuide').checked,
+    requires_permit: document.getElementById('fPermit').checked,
+  };
+
+  const alt = document.getElementById('fAlt').value;
+  if (alt) payload.altitude = parseInt(alt);
+  const airport = document.getElementById('fAirport').value.trim();
+  if (airport) payload.nearest_airport = airport;
+  const airportDist = document.getElementById('fAirportDist').value;
+  if (airportDist) payload.distance_from_airport = parseFloat(airportDist);
+  const fee = document.getElementById('fFee').value;
+  if (fee) payload.entrance_fee = parseFloat(fee);
+
+  if (imageFile) {
+    const fd = new FormData();
+    Object.entries(payload).forEach(([k, v]) => fd.append(k, v));
+    fd.append('featured_image', imageFile);
+    body = fd;
+    isJson = false;
+  } else {
+    if (imageUrl) payload.featured_image = imageUrl;
+    body = payload;
+  }
+
+  document.getElementById('formSubmitBtn').disabled = true;
+  document.getElementById('formSubmitBtn').innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i> Saving…';
+
+  let result;
+  try {
+    if (state.editingSlug) {
+      result = await apiPatch(`/attractions/${state.editingSlug}/`, body, isJson);
+    } else {
+      result = await apiPost('/attractions/', body, isJson);
+    }
+  } catch (e) {
+    showFormError('Network error. Is the server running?');
+    resetSubmitBtn(); return;
+  }
+
+  resetSubmitBtn();
+
+  if (result.ok) {
+    closeModal('formModal');
+    await fetchAttractions();
+    applyFilters();
+    renderStats();
+    showToast(state.editingSlug ? 'Attraction updated!' : 'Attraction created!', 'success');
+  } else {
+    const msgs = Object.entries(result.data).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`).join(' | ');
+    showFormError(msgs || 'Save failed.');
+  }
+}
+
+function resetSubmitBtn() {
+  const btn = document.getElementById('formSubmitBtn');
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fa fa-save mr-1"></i> Save Attraction';
+}
+
+function showFormError(msg) {
+  const el = document.getElementById('formError');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+function clearForm() {
+  ['fName','fSlug','fShortDesc','fDesc','fLat','fLon','fAlt','fAccess','fAirport',
+   'fAirportDist','fBestTime','fSeasonal','fDuration','fFee','fImageUrl'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  ['fFeatured','fGuide','fPermit'].forEach(id => document.getElementById(id).checked = false);
+  document.getElementById('fRegion').value = '';
+  document.getElementById('fCategory').value = '';
+  document.getElementById('fDifficulty').value = '';
+  document.getElementById('fImage').value = '';
+  updateShortDescCount();
+}
+
+// ── Delete ─────────────────────────────────────────
+function openDeleteModal(slug, name) {
+  state.deleteSlug = slug;
+  document.getElementById('deleteAttractionName').textContent = name;
+  document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+async function confirmDelete() {
+  if (!state.deleteSlug) return;
+  document.getElementById('deleteConfirmBtn').innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i> Deleting…';
+  const ok = await apiDelete(`/attractions/${state.deleteSlug}/`);
+  document.getElementById('deleteConfirmBtn').innerHTML = '<i class="fa fa-trash mr-1"></i> Delete';
+  if (ok) {
+    closeModal('deleteModal');
+    state.attractions = state.attractions.filter(a => a.slug !== state.deleteSlug);
+    applyFilters();
+    renderStats();
+    showToast('Attraction deleted.', 'info');
+    state.deleteSlug = null;
+  } else {
+    showToast('Delete failed. You may not have permission.', 'error');
+  }
+}
+
+// ── Modal helpers ──────────────────────────────────
+function openAuthModal() {
+  switchAuthTab('login');
+  document.getElementById('authModal').classList.remove('hidden');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('formLogin').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('formRegister').classList.toggle('hidden', tab !== 'register');
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+}
+
+const formTabs = ['ftab0', 'ftab1', 'ftab2', 'ftab3'];
+function switchFormTab(idx) {
+  state.formTab = idx;
+  formTabs.forEach((id, i) => {
+    document.getElementById(id).classList.toggle('hidden', i !== idx);
+  });
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    if (btn.getAttribute('onclick')?.includes('switchFormTab')) {
+      btn.classList.toggle('active', i === idx);
+      btn.classList.toggle('text-gray-500', i !== idx);
+    }
+  });
+}
+
+// ── Slug & Char count ──────────────────────────────
+function autoSlug() {
+  const name = document.getElementById('fName').value;
+  document.getElementById('fSlug').value = name.toLowerCase()
+    .replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+}
+
+function updateShortDescCount() {
+  const val = document.getElementById('fShortDesc').value;
+  document.getElementById('shortDescCount').textContent = `${val.length} / 300`;
+}
+document.getElementById('fShortDesc').addEventListener('input', updateShortDescCount);
+
+// ── Toast ──────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type = 'info') {
+  clearTimeout(toastTimer);
+  const toast = document.getElementById('toast');
+  const inner = document.getElementById('toastInner');
+  const icon = document.getElementById('toastIcon');
+  document.getElementById('toastMsg').textContent = msg;
+  const cfg = {
+    success: { bg: '#065f46', icon: 'fa-check-circle' },
+    error:   { bg: '#991b1b', icon: 'fa-exclamation-circle' },
+    info:    { bg: '#1e40af', icon: 'fa-info-circle' },
+  }[type] || { bg: '#374151', icon: 'fa-bell' };
+  inner.style.background = cfg.bg;
+  icon.className = `fa ${cfg.icon} text-lg`;
+  toast.classList.remove('hidden');
+  toastTimer = setTimeout(() => toast.classList.add('hidden'), 3500);
+}
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+// Close modals on backdrop click
+['authModal','detailModal','formModal','deleteModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) {
+    if (e.target === this) closeModal(id);
+  });
+});
+
+// ── Init ───────────────────────────────────────────
+async function init() {
+  updateAuthUI();
+  await Promise.all([fetchAttractions(), fetchRegions()]);
+  state.filtered = [...state.attractions];
+  renderStats();
+  renderAttractions();
+}
+
+init();
+</script>
+</body>
+</html>
