@@ -8,7 +8,7 @@
 [![DRF](https://img.shields.io/badge/DRF-3.14+-red.svg)](https://www.django-rest-framework.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-**Frontend Repo:** [tz-tourism-web](https://github.com/cleven12/tz-tourism-web) | **API Docs:** [docs/API.md](docs/API.md)
+**Live API:** https://cf89615f228bb45cc805447510de80.pythonanywhere.com/ | **Frontend Repo:** [twenzetu-safari-api](https://github.com/cleven12/twenzetu-safari-api) | **API Docs:** [docs/API.md](docs/API.md)
 
 ---
 
@@ -16,7 +16,7 @@
 
 This is the **backend API** for TZ Tourism platform - providing GPS-accurate data for Tanzania's tourist attractions, real-time weather information, and comprehensive REST API for developers.
 
-**Frontend repository:** [tz-tourism-web](https://github.com/cleven12/tz-tourism-web)
+**Frontend repository:** [twenzetu-safari-web](https://github.com/cleven12/twenzetu-safari-web)
 
 ---
 
@@ -24,7 +24,7 @@ This is the **backend API** for TZ Tourism platform - providing GPS-accurate dat
 
 **Backend API Structure:**
 ```
-tz-tourism/
+twenzetu-safari-api/
 ├── src/
 │   ├── attractions/      # Attractions app (models, views, serializers)
 │   ├── regions/          # Regions app
@@ -58,8 +58,8 @@ tz-tourism/
 
 ```bash
 # Clone repository
-git clone https://github.com/cleven12/tz-tourism.git
-cd tz-tourism
+https://github.com/cleven12/twenzetu-safari-api.git
+cd twenzetu-safari-api
 
 # Create virtual environment
 python -m venv venv
@@ -88,6 +88,8 @@ python src/manage.py runserver
 **API runs at:** `http://localhost:8000/api/v1/`  
 **Admin panel:** `http://localhost:8000/admin/`  
 **API docs:** `http://localhost:8000/api/docs/`
+
+> **🌐 Production API:** https://cf89615f228bb45cc805447510de80.pythonanywhere.com/
 
 ---
 
@@ -173,7 +175,7 @@ pytest -v src/
 - **Testing:** pytest + pytest-django
 - **Code Quality:** black, flake8, isort
 - **CORS:** django-cors-headers
-- **Hosting:** PythonAnywhere / Railway / Heroku / AWS
+- **Hosting:** [PythonAnywhere](https://cf89615f228bb45cc805447510de80.pythonanywhere.com/)
 
 ---
 
@@ -268,7 +270,7 @@ DB_PORT=5432
 OPEN_METEO_API_URL=https://api.open-meteo.com/v1
 
 # CORS (Frontend URL)
-CORS_ALLOWED_ORIGINS=http://localhost:3000,https://tz-tourism-web.vercel.app
+CORS_ALLOWED_ORIGINS=http://localhost:3000,https://twenzetu-safari-web.vercel.app
 
 # JWT
 JWT_SECRET_KEY=your-jwt-secret
@@ -322,13 +324,13 @@ Built to provide **honest, accurate tourism data** for Tanzania through an open,
 
 **Mission:** Enable safe, informed tourism through accessible data.
 
-**Frontend:** [tz-tourism-web](https://github.com/cleven12/tz-tourism-web)
+**Frontend:** [twenzetu-safari-web](https://github.com/cleven12/twenzetu-safari-web)
 
 ---
 
 ## Contact
 
-- **Issues:** [GitHub Issues](https://github.com/cleven12/tz-tourism/issues)
+- **Issues:** [GitHub Issues](https://github.com/cleven12/twenzetu-safari-api/issues)
 - **Email:** cf89615f228bb45cc805447510de802dfb4bae17@proton.me
 - **API Support:** cf89615f228bb45cc805447510de802dfb4bae17@proton.me
 
@@ -338,7 +340,7 @@ Built to provide **honest, accurate tourism data** for Tanzania through an open,
 
 - Weather data: [Open-Meteo](https://open-meteo.com)
 - Framework: [Django](https://djangoproject.com) & [DRF](https://www.django-rest-framework.org)
-- Community contributors: [See all](https://github.com/cleven12/tz-tourism/graphs/contributors)
+- Community contributors: [See all](https://github.com/cleven12/twenzetu-safari-api/graphs/contributors)
 
 ---
 

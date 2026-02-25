@@ -253,8 +253,10 @@ import type { AttractionListItem } from '@/mockdata';  // types stay the same
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
+const BASE_URL = 'https://cf89615f228bb45cc805447510de80.pythonanywhere.com';
+
 export function useAttractions() {
-  return useSWR<AttractionListItem[]>('/api/v1/attractions/', fetcher);
+  return useSWR<AttractionListItem[]>(`${BASE_URL}/api/v1/attractions/`, fetcher);
 }
 ```
 
@@ -282,5 +284,6 @@ export function useAttractions() {
 | `GET` | `/api/v1/weather/forecast/?attraction=:slug&days=7` | — | 7-day forecast |
 | `GET` | `/api/v1/weather/seasonal/?attraction=:slug` | — | Seasonal patterns |
 
-**Base URL:** `http://localhost:8000`  
+**Base URL (production):** `https://cf89615f228bb45cc805447510de80.pythonanywhere.com`  
+**Base URL (local dev):** `http://localhost:8000`  
 **Auth header:** `Authorization: Bearer <access_token>`

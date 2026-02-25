@@ -91,7 +91,7 @@ Have ideas for improvement?
 ### **For Non-Developers (Content Contributors)**
 
 1. **Create a GitHub account** (if you don't have one)
-2. **Go to Issues:** [github.com/cleven12/tz-tourism.git/issues](https://github.com/cleven12/tz-tourism.git/issues)
+2. **Go to Issues:** [github.com/cleven12/twenzetu-safari-api.git/issues](https://github.com/cleven12/twenzetu-safari-api.git/issues)
 3. **Click "New Issue"**
 4. **Choose a template:**
    - New Attraction
@@ -109,8 +109,8 @@ We'll review and respond within 48-72 hours.
 #### **Step 1: Fork & Clone**
 ```bash
 # Fork the repository on GitHub first, then:
-git clone https://github.com/cleven12/tz-tourism.git
-cd tz-tourism
+https://github.com/cleven12/twenzetu-safari-api.git
+cd twenzetu-safari-api
 ```
 
 #### **Step 2: Set Up Backend**
@@ -455,7 +455,7 @@ Contributors are recognized in:
 ## Need Help?
 
 **Questions about contributing?**
-- Open a [Discussion](https://github.com/cleven12/tz-tourism/discussions)
+- Open a [Discussion](https://github.com/cleven12/twenzetu-safari-api/discussions)
 - Ask in issues with "question" label
 - Email: cf89615f228bb45cc805447510de802dfb4bae17@proton.me
 

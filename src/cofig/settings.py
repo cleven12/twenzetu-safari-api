@@ -93,7 +93,7 @@ WSGI_APPLICATION = 'cofig.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'tz-tourism.db',
+        'NAME': BASE_DIR / 'twenzetu-safari-api.db',
     }
 }
 
@@ -206,10 +206,10 @@ if config('ON_PYTHONANYWHERE', default=False, cast=bool):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': Path.home() / config('PYTHONANYWHERE_USERNAME', default='app') / 'tz-tourism' / 'db.sqlite3',
+            'NAME': Path.home() / config('PYTHONANYWHERE_USERNAME', default='app') / 'twenzetu-safari-api' / 'db.sqlite3',
         }
     }
 
     STATIC_ROOT = BASE_DIR / 'staticfiles'
-    MEDIA_ROOT = Path.home() / config('PYTHONANYWHERE_USERNAME', default='app') / 'tz-tourism' / 'media'
+    MEDIA_ROOT = Path.home() / config('PYTHONANYWHERE_USERNAME', default='app') / 'twenzetu-safari-api' / 'media'
 
