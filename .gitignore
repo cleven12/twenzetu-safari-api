@@ -13,3 +13,5 @@ copilot*.md
 *.bak
 *.swp
 copilot-*
+*copilot*
+utils/
