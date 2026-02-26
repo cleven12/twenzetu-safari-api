@@ -8,7 +8,11 @@
 [![DRF](https://img.shields.io/badge/DRF-3.14+-red.svg)](https://www.django-rest-framework.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-**Live API:** https://cf89615f228bb45cc805447510de80.pythonanywhere.com/ | **Frontend Repo:** [twenzetu-safari-api](https://github.com/cleven12/twenzetu-safari-api) | **API Docs:** [docs/API.md](docs/API.md)
+
+- **Live Deployment** : https://twenzetusafari.netlify.app/
+- **Live API:** https://cf89615f228bb45cc805447510de80.pythonanywhere.com/
+- **Frontend Repo:** [twenzetu-safari-api](https://github.com/cleven12/twenzetu-safari-api)
+- **API Docs:** [docs/API.md](docs/API.md)
 
 ---
 
