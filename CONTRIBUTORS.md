@@ -1,6 +1,6 @@
-# Contributing to TZ Tourism
+# Contributing to Xenohuru
 
-Thank you for your interest in contributing to TZ Tourism! 🎉
+Thank you for your interest in contributing to Xenohuru! 🎉
 
 We're building an open platform to provide honest, accurate tourism information for Tanzania. Every contribution helps tourists make better decisions and promotes safe, informed travel.
 

@@ -193,7 +193,7 @@ WEATHER_CACHE_TIMEOUT = 1800  # 30 minutes
 
 # OpenAPI / Swagger UI Configuration
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'TZ Tourism API',
+    'TITLE': 'Xenohuru API',
     'DESCRIPTION': 'API for Tanzania Tourism platform',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,

@@ -8,7 +8,7 @@
 
 ## 1. Acceptance of Terms
 
-By accessing or using the TZ Tourism platform (the "Service"), including the website, API, and any associated services, you agree to be bound by these Terms of Service ("Terms"). 
+By accessing or using the Xenohuru platform (the "Service"), including the website, API, and any associated services, you agree to be bound by these Terms of Service ("Terms"). 
 
 **If you do not agree to these Terms, do not use the Service.**
 
@@ -16,7 +16,7 @@ By accessing or using the TZ Tourism platform (the "Service"), including the web
 
 ## 2. Description of Service
 
-TZ Tourism is an **open-source platform** that provides:
+Xenohuru is an **open-source platform** that provides:
 - Information about tourist attractions in Tanzania
 - GPS coordinates and location data
 - Weather information (current and historical)
@@ -260,7 +260,7 @@ If any provision of these Terms is found unenforceable, the remaining provisions
 
 ## 15. Entire Agreement
 
-These Terms, along with the Privacy Policy and other referenced policies, constitute the entire agreement between you and TZ Tourism.
+These Terms, along with the Privacy Policy and other referenced policies, constitute the entire agreement between you and Xenohuru.
 
 ---
 
