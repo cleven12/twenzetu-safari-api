@@ -210,10 +210,10 @@ if config('ON_PYTHONANYWHERE', default=False, cast=bool):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': Path.home() / config('PYTHONANYWHERE_USERNAME', default='app') / 'twenzetu-safari-api' / 'db.sqlite3',
+            'NAME': Path.home() / config('PYTHONANYWHERE_USERNAME', default='app') / 'xenohuru-api' / 'db.sqlite3',
         }
     }
 
     STATIC_ROOT = BASE_DIR / 'staticfiles'
-    MEDIA_ROOT = Path.home() / config('PYTHONANYWHERE_USERNAME', default='app') / 'twenzetu-safari-api' / 'media'
+    MEDIA_ROOT = Path.home() / config('PYTHONANYWHERE_USERNAME', default='app') / 'xenohuru-api' / 'media'
 
