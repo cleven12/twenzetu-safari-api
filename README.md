@@ -143,3 +143,4 @@ MIT License — see [LICENSE](LICENSE)
 ---
 
 **🌍 Built with Django | 🇹🇿 From Tanzania | ❤️ Support us on [Ko-fi](https://ko-fi.com/xenohuru)**
+ 
