@@ -1,6 +1,6 @@
-# Contributing to TZ Tourism
+# Contributing to Xenohuru
 
-Thank you for your interest in contributing to TZ Tourism! 🎉
+Thank you for your interest in contributing to Xenohuru! 🎉
 
 We're building an open platform to provide honest, accurate tourism information for Tanzania. Every contribution helps tourists make better decisions and promotes safe, informed travel.
 
@@ -91,7 +91,7 @@ Have ideas for improvement?
 ### **For Non-Developers (Content Contributors)**
 
 1. **Create a GitHub account** (if you don't have one)
-2. **Go to Issues:** [github.com/cleven12/twenzetu-safari-api.git/issues](https://github.com/cleven12/twenzetu-safari-api.git/issues)
+2. **Go to Issues:** [github.com/xenohuru/xenohuru-api.git/issues](https://github.com/xenohuru/xenohuru-api.git/issues)
 3. **Click "New Issue"**
 4. **Choose a template:**
    - New Attraction
@@ -109,8 +109,8 @@ We'll review and respond within 48-72 hours.
 #### **Step 1: Fork & Clone**
 ```bash
 # Fork the repository on GitHub first, then:
-https://github.com/cleven12/twenzetu-safari-api.git
-cd twenzetu-safari-api
+https://github.com/xenohuru/xenohuru-api.git
+cd xenohuru-api
 ```
 
 #### **Step 2: Set Up Backend**
@@ -225,7 +225,7 @@ Then:
 
 ### **Before Submitting:**
 - [ ] Code follows project style
-- [ ] Tests pass (`pytest` and `npm test`)
+- [ ] Tests pass (`pytest`)
 - [ ] Documentation updated (if needed)
 - [ ] Commit messages are clear
 - [ ] Branch is up to date with `main`
@@ -274,25 +274,6 @@ def get_weather_data(latitude: float, longitude: float) -> dict:
     # Implementation
 ```
 
-### **JavaScript/TypeScript (Frontend)**
-- Use TypeScript for new code
-- Follow ESLint rules
-- Use functional components (React)
-- Use meaningful variable names
-- Max line length: 100 characters
-- Use Prettier for formatting
-```typescript
-interface WeatherData {
-  temperature: number;
-  condition: string;
-  rain_mm: number;
-}
-
-const WeatherCard: React.FC = ({ data }) => {
-  // Implementation
-};
-```
-
 ### **General Principles:**
 - [✔] Clear, descriptive names
 - [✔] Small, focused functions
@@ -315,17 +296,6 @@ def test_attraction_list_api():
     response = client.get('/api/v1/attractions/')
     assert response.status_code == 200
     assert len(response.json()) > 0
-```
-
-### **Frontend Tests (Jest)**
-```typescript
-// frontend/__tests__/WeatherCard.test.tsx
-describe('WeatherCard', () => {
-  it('renders temperature correctly', () => {
-    render();
-    expect(screen.getByText('25°C')).toBeInTheDocument();
-  });
-});
 ```
 
 **Coverage Goals:**
@@ -455,7 +425,7 @@ Contributors are recognized in:
 ## Need Help?
 
 **Questions about contributing?**
-- Open a [Discussion](https://github.com/cleven12/twenzetu-safari-api/discussions)
+- Open a [Discussion](https://github.com/xenohuru/xenohuru-api/discussions)
 - Ask in issues with "question" label
 - Email: cf89615f228bb45cc805447510de802dfb4bae17@proton.me
 
@@ -470,7 +440,6 @@ Contributors are recognized in:
 
 **Learning Resources:**
 - [Django Tutorial](https://docs.djangoproject.com/en/stable/intro/tutorial01/)
-- [Next.js Learn](https://nextjs.org/learn)
 - [Git Basics](https://git-scm.com/book/en/v2/Getting-Started-Git-Basics)
 - [REST API Design](https://restfulapi.net/)
 

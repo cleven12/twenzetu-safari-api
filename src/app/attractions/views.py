@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.core.cache import cache
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample, OpenApiResponse
 from .models import Attraction
 from .serializers import (
     AttractionListSerializer,
@@ -18,14 +18,62 @@ BASE_QUERYSET = Attraction.objects.filter(is_active=True).select_related('region
     tags=['Attractions'],
     summary='List or create attractions',
     description=(
-        'GET: Returns all active attractions. Supports optional query params:\n'
-        '- `search`: filter by name, description, or region\n'
-        '- `ordering`: sort by any field (e.g. `name`, `-created_at`)\n\n'
-        'POST: Create a new attraction (authenticated users only).'
+        '**GET** — Returns all active attractions. Supports optional query parameters:\n\n'
+        '| Parameter | Type | Description |\n'
+        '|-----------|------|-------------|\n'
+        '| `search` | string | Filter by name, description, short description, or region name |\n'
+        '| `ordering` | string | Sort by any field. Prefix with `-` for descending (e.g. `-created_at`) |\n\n'
+        '**POST** — Create a new attraction. Requires authentication.\n\n'
+        '**curl GET example:**\n'
+        '```bash\n'
+        'curl "https://cf89615f228bb45cc805447510de80.pythonanywhere.com/api/v1/attractions/?search=kilimanjaro"\n'
+        '```\n\n'
+        '**curl POST example:**\n'
+        '```bash\n'
+        'curl -X POST https://cf89615f228bb45cc805447510de80.pythonanywhere.com/api/v1/attractions/ \\\n'
+        '  -H "Authorization: Bearer <access_token>" \\\n'
+        '  -H "Content-Type: application/json" \\\n'
+        '  -d \'{"name":"Ngorongoro Crater","slug":"ngorongoro-crater","region":1,"category":"wildlife",'
+        '"description":"...","short_description":"...","latitude":"-3.2","longitude":"35.5",'
+        '"difficulty_level":"moderate","access_info":"By road from Arusha",'
+        '"best_time_to_visit":"June-October","seasonal_availability":"Year-round",'
+        '"estimated_duration":"1-2 days"}\'\n'
+        '```'
     ),
     parameters=[
-        OpenApiParameter('search', description='Filter by name, description, short description or region', required=False),
-        OpenApiParameter('ordering', description='Sort results by field (prefix with `-` for descending)', required=False),
+        OpenApiParameter('search', description='Filter by name, description, short description or region', required=False, type=str),
+        OpenApiParameter('ordering', description='Sort results by field. Prefix with `-` for descending (e.g. `name`, `-created_at`)', required=False, type=str),
+    ],
+    request=AttractionCreateUpdateSerializer,
+    responses={
+        200: OpenApiResponse(response=AttractionListSerializer(many=True), description='List of active attractions.'),
+        201: OpenApiResponse(response=AttractionCreateUpdateSerializer, description='Attraction created successfully.'),
+        400: OpenApiResponse(description='Validation error — check required fields.'),
+        401: OpenApiResponse(description='Authentication required for POST.'),
+    },
+    examples=[
+        OpenApiExample(
+            'Create attraction',
+            request_only=True,
+            value={
+                'name': 'Ngorongoro Crater',
+                'slug': 'ngorongoro-crater',
+                'region': 1,
+                'category': 'wildlife',
+                'description': 'The world\'s largest inactive caldera, home to the Big Five.',
+                'short_description': 'World\'s largest inactive volcanic caldera.',
+                'latitude': '-3.2',
+                'longitude': '35.5',
+                'difficulty_level': 'moderate',
+                'access_info': 'By road from Arusha (approx. 3 hours).',
+                'best_time_to_visit': 'June-October',
+                'seasonal_availability': 'Year-round',
+                'estimated_duration': '1-2 days',
+                'entrance_fee': '70.00',
+                'requires_guide': True,
+                'requires_permit': False,
+            },
+        )
     ],
 )
 @api_view(['GET', 'POST'])
@@ -54,7 +102,38 @@ def attraction_list_create(request):
 @extend_schema(
     tags=['Attractions'],
     summary='Retrieve, update or delete an attraction',
-    description='GET: Full details of an attraction by slug. PUT/PATCH: Update it. DELETE: Remove it (authenticated users only).',
+    description=(
+        'Look up an attraction by its `slug` (the URL-friendly name, e.g. `mount-kilimanjaro`).\n\n'
+        '- **GET** — Public. Returns full attraction details including region, images, and tips.\n'
+        '- **PUT** — Full update. All writable fields required. Authentication required.\n'
+        '- **PATCH** — Partial update. Only send the fields you want to change. Authentication required.\n'
+        '- **DELETE** — Remove the attraction. Authentication required.\n\n'
+        '**curl GET example:**\n'
+        '```bash\n'
+        'curl https://cf89615f228bb45cc805447510de80.pythonanywhere.com/api/v1/attractions/mount-kilimanjaro/\n'
+        '```\n\n'
+        '**curl PATCH example:**\n'
+        '```bash\n'
+        'curl -X PATCH https://cf89615f228bb45cc805447510de80.pythonanywhere.com/api/v1/attractions/mount-kilimanjaro/ \\\n'
+        '  -H "Authorization: Bearer <access_token>" \\\n'
+        '  -H "Content-Type: application/json" \\\n'
+        '  -d \'{"entrance_fee":"80.00"}\'\n'
+        '```'
+    ),
+    responses={
+        200: OpenApiResponse(response=AttractionDetailSerializer, description='Full attraction details.'),
+        204: OpenApiResponse(description='Attraction deleted successfully.'),
+        401: OpenApiResponse(description='Authentication required for write operations.'),
+        404: OpenApiResponse(description='No attraction found with the given slug.'),
+    },
+
+    examples=[
+        OpenApiExample(
+            'Partial update — change entrance fee',
+            request_only=True,
+            value={'entrance_fee': '80.00'},
+        )
+    ],
 )
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
 @permission_classes([IsAuthenticatedOrReadOnly])
@@ -81,7 +160,17 @@ def attraction_detail(request, slug):
 @extend_schema(
     tags=['Attractions'],
     summary='Featured attractions',
-    description='Returns up to 6 featured attractions. Results are cached for 1 hour.',
+    description=(
+        'Returns up to 6 attractions marked as featured (`is_featured=true`).\n\n'
+        'Results are cached in memory for **1 hour** — changes in the admin panel may take up to 1 hour to reflect here.\n\n'
+        '**curl example:**\n'
+        '```bash\n'
+        'curl https://cf89615f228bb45cc805447510de80.pythonanywhere.com/api/v1/attractions/featured/\n'
+        '```'
+    ),
+    responses={
+        200: OpenApiResponse(response=AttractionListSerializer(many=True), description='Up to 6 featured attractions.'),
+    },
 )
 @api_view(['GET'])
 @permission_classes([IsAuthenticatedOrReadOnly])
@@ -101,10 +190,28 @@ def featured_attractions(request):
 @extend_schema(
     tags=['Attractions'],
     summary='Attractions by category',
-    description='Returns all active attractions filtered by a specific category.',
+    description=(
+        'Returns all active attractions filtered by category.\n\n'
+        '**Valid category values:** `mountain`, `beach`, `wildlife`, `cultural`, `historical`, '
+        '`adventure`, `national_park`, `island`, `waterfall`, `lake`, `other`\n\n'
+        '**curl example:**\n'
+        '```bash\n'
+        'curl "https://cf89615f228bb45cc805447510de80.pythonanywhere.com/api/v1/attractions/by_category/?category=national_park"\n'
+        '```'
+    ),
     parameters=[
-        OpenApiParameter('category', description='Category name to filter attractions by', required=True),
+        OpenApiParameter(
+            'category',
+            description='Category slug. One of: `mountain`, `beach`, `wildlife`, `cultural`, `historical`, `adventure`, `national_park`, `island`, `waterfall`, `lake`, `other`',
+            required=True,
+            type=str,
+            enum=['mountain', 'beach', 'wildlife', 'cultural', 'historical', 'adventure', 'national_park', 'island', 'waterfall', 'lake', 'other'],
+        ),
     ],
+    responses={
+        200: OpenApiResponse(response=AttractionListSerializer(many=True), description='Attractions in the given category.'),
+        400: OpenApiResponse(description='`category` query parameter is required.'),
+    },
 )
 @api_view(['GET'])
 @permission_classes([IsAuthenticatedOrReadOnly])
@@ -121,10 +228,26 @@ def attractions_by_category(request):
 @extend_schema(
     tags=['Attractions'],
     summary='Attractions by region',
-    description='Returns all active attractions within a specific region, identified by slug.',
+    description=(
+        'Returns all active attractions within a region, identified by its `slug`.\n\n'
+        'Use `GET /api/v1/regions/` to list all available region slugs.\n\n'
+        '**curl example:**\n'
+        '```bash\n'
+        'curl "https://cf89615f228bb45cc805447510de80.pythonanywhere.com/api/v1/attractions/by_region/?region=arusha"\n'
+        '```'
+    ),
     parameters=[
-        OpenApiParameter('region', description='Region slug to filter attractions by', required=True),
+        OpenApiParameter(
+            'region',
+            description='Region slug (e.g. `arusha`, `zanzibar`, `kilimanjaro`). See `GET /api/v1/regions/` for all slugs.',
+            required=True,
+            type=str,
+        ),
     ],
+    responses={
+        200: OpenApiResponse(response=AttractionListSerializer(many=True), description='Attractions in the given region.'),
+        400: OpenApiResponse(description='`region` query parameter is required.'),
+    },
 )
 @api_view(['GET'])
 @permission_classes([IsAuthenticatedOrReadOnly])

@@ -94,7 +94,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': config('DATABASE_NAME', default='twenzetu_safari'),
-        'USER': config('DATABASE_USER', default='root'),
+        'USER': config('DATABASE_USER', default='twenzetu_safari_user'),
         'PASSWORD': config('DATABASE_PASSWORD', default=''),
         'HOST': config('DATABASE_HOST', default='localhost'),
         'PORT': config('DATABASE_PORT', default=3306),
@@ -193,7 +193,7 @@ WEATHER_CACHE_TIMEOUT = 1800  # 30 minutes
 
 # OpenAPI / Swagger UI Configuration
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'TZ Tourism API',
+    'TITLE': 'Xenohuru API',
     'DESCRIPTION': 'API for Tanzania Tourism platform',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
@@ -210,10 +210,10 @@ if config('ON_PYTHONANYWHERE', default=False, cast=bool):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': Path.home() / config('PYTHONANYWHERE_USERNAME', default='app') / 'twenzetu-safari-api' / 'db.sqlite3',
+            'NAME': Path.home() / config('PYTHONANYWHERE_USERNAME', default='app') / 'xenohuru-api' / 'db.sqlite3',
         }
     }
 
     STATIC_ROOT = BASE_DIR / 'staticfiles'
-    MEDIA_ROOT = Path.home() / config('PYTHONANYWHERE_USERNAME', default='app') / 'twenzetu-safari-api' / 'media'
+    MEDIA_ROOT = Path.home() / config('PYTHONANYWHERE_USERNAME', default='app') / 'xenohuru-api' / 'media'
 
