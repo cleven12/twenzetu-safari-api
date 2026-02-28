@@ -8,10 +8,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Open Source Community](https://img.shields.io/badge/Made%20in-Tanzania-green.svg)](#)
 
-- **Live API:** https://cf89615f228bb45cc805447510de80.pythonanywhere.com/ 
-
-- **Frontend UI:** https://xenohuru.netlify.app/
-- **Sponsor Us:** [Ko-fi](https://ko-fi.com/xenohuru)
+**Live API:** https://cf89615f228bb45cc805447510de80.pythonanywhere.com/ | **Frontend UI:** https://xenohuru.netlify.app/ | **Sponsor Us:** [Ko-fi](https://ko-fi.com/xenohuru)
 
 ---
 
