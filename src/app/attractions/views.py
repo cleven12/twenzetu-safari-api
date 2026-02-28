@@ -126,6 +126,7 @@ def attraction_list_create(request):
         401: OpenApiResponse(description='Authentication required for write operations.'),
         404: OpenApiResponse(description='No attraction found with the given slug.'),
     },
+
     examples=[
         OpenApiExample(
             'Partial update — change entrance fee',
